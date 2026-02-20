@@ -1,9 +1,11 @@
 package org.example
 
-import org.example.creatures.GiantChildren
-import org.example.creatures.Observers
-import org.example.creatures.Place
-import org.example.creatures.WildHorses
+import org.example.actors.GiantChildren
+import org.example.actors.Observers
+import org.example.world.Territory
+import org.example.world.Cargo
+import org.example.base.Size
+import org.example.actors.WildHorses
 
 /**
    Они сидели на мостовой и смотрели с некоторым беспокойством,
@@ -11,12 +13,14 @@ import org.example.creatures.WildHorses
    по небу в Неизведанные Области свежие запасы армированных изгородей.
 */
 fun main() {
-    val observers = Observers(20,5, Place.PAVEMENT)
-    val children = GiantChildren(10, 1, Place.SAND)
-    val horses = WildHorses(7, 3,Place.SKY, Place.UNKNOWN_REGIONS)
+    val destination = Territory("Неизведанные Области",true)
+    val cargo = Cargo()
 
-    val engine = StoryEngine(observers, children, horses)
-    val timeline = engine.run()
+    val observers = Observers(5, Size.NORMAL)
+    val children = GiantChildren(2)
+    val horses = WildHorses(3)
 
-    println("кол-во событий: ${timeline.size}, Лошади есть?=${horses.appeared}, состояние=${observers.mood}")
+    val timeline = StoryEngine(observers, children, horses, destination, cargo).run()
+
+    println("событий=${timeline.size}, лошади=${horses.appeared}, состояние=${observers.mood}")
 }

@@ -1,0 +1,17 @@
+package org.example.statements
+
+enum class EventType {
+    SAT_ON_PAVEMENT,
+    KEPT_WAITING,
+    WATCHED_WITH_WORRY,
+    WORRY_CHANGED,
+
+    HEARD_NEIGH,
+    LOOKED_ANNOYED,
+    REALIZED_HORSE_APPEARED,
+
+    CHILDREN_JUMPED_HARD,
+    HORSES_HAULED_WITH_RUMBLE,
+
+    ERROR
+}

@@ -1,4 +1,4 @@
-package org.example.creatures
+package org.example.actors
 
 enum class Mood {
     CALM,

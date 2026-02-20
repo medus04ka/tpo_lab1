@@ -1,4 +1,4 @@
-package org.example.creatures
+package org.example.base
 
 import org.example.statements.Statement
 import org.example.statements.StatementObject
