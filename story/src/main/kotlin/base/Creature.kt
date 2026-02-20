@@ -8,6 +8,6 @@ abstract class Creature(
 ) : Supposable {
 
     override fun createStatement(fame: Int, importance: Int, statementObject: StatementObject): Statement {
-        return Statement(this)
+        return Statement(this, statementObject)
     }
 }
