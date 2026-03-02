@@ -11,20 +11,20 @@ class HorseTests {
     @Test
     fun sky() {
         assertDoesNotThrow {
-            Horse(location = sky, maxCarryWeight = 500, horseType = HorseType.WILD)
+            Horse(sky, 500,  HorseType.WILD)
         }
     }
 
     @Test
     fun domH() {
         assertThrows<LocationRuleViolation> {
-            Horse(location = sky, maxCarryWeight = 500, horseType = HorseType.DOMESTIC)
+            Horse(sky, 500, HorseType.DOMESTIC)
         }
     }
 
     @Test
     fun addCargo() {
-        val horse = Horse(pavement, maxCarryWeight = 200, horseType = HorseType.DOMESTIC)
+        val horse = Horse(pavement,  200,  HorseType.DOMESTIC)
         val cargo = Cargo("Доски", weight = 50)
 
         horse.addCargo(cargo)
@@ -37,17 +37,19 @@ class HorseTests {
 
     @Test
     fun addCargoRule() {
-        val horse = Horse(pavement, maxCarryWeight = 100, horseType = HorseType.DOMESTIC)
-        val cargo = Cargo("Тяжёлое", weight = 150)
+        val horse = Horse(pavement, 100, HorseType.DOMESTIC)
+        val cargo = Cargo("Тяжёлое",  150)
 
-        assertThrows<CargoRuleViolation> { horse.addCargo(cargo) }
+        assertThrows<CargoRuleViolation> {
+            horse.addCargo(cargo)
+        }
         assertEquals(0, horse.currentLoadWeight())
     }
 
     @Test
     fun notCarry() {
-        val domestic = Horse(pavement, maxCarryWeight = 500, horseType = HorseType.DOMESTIC)
-        val cargo = Cargo("Изгороди", weight = 120, freshness = Freshness.FRESH, noiseContribution = 35)
+        val domestic = Horse(pavement, 500, HorseType.DOMESTIC)
+        val cargo = Cargo("Изгороди",120, Freshness.FRESH, 35)
 
         assertThrows<LocationRuleViolation> {
             domestic.carry(cargo, unknownLands)
@@ -56,8 +58,8 @@ class HorseTests {
 
     @Test
     fun carry() {
-        val wild = Horse(pavement, maxCarryWeight = 100, horseType = HorseType.WILD)
-        val cargo = Cargo("Изгороди", weight = 120, freshness = Freshness.FRESH, noiseContribution = 35)
+        val wild = Horse(pavement, 100, HorseType.WILD)
+        val cargo = Cargo("Изгороди", 120,  Freshness.FRESH,  35)
 
         assertThrows<CargoRuleViolation> {
             wild.carry(cargo, unknownLands)
@@ -66,8 +68,8 @@ class HorseTests {
 
     @Test
     fun full() {
-        val wild = Horse(pavement, maxCarryWeight = 500, horseType = HorseType.WILD)
-        val cargo = Cargo("Армированные изгороди", weight = 120, freshness = Freshness.FRESH, noiseContribution = 35)
+        val wild = Horse(pavement,500, HorseType.WILD)
+        val cargo = Cargo("Армированные изгороди", 120, Freshness.FRESH, 35)
 
         wild.carry(cargo, unknownLands)
 
@@ -81,7 +83,7 @@ class HorseTests {
 
     @Test
     fun testy() {
-        val horse = Horse(pavement, maxCarryWeight = 100, horseType = HorseType.DOMESTIC)
+        val horse = Horse(pavement,100, HorseType.DOMESTIC)
 
         assertTrue(horse.canAdd(Cargo("Лёгкое", 40)))
         horse.addCargo(Cargo("Лёгкое", 40))

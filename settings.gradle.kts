@@ -3,3 +3,5 @@ plugins {
 }
 rootProject.name = "Tpo_lab1"
 include("story")
+include("math")
+include("site")

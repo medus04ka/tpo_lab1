@@ -42,7 +42,8 @@ fun main() {
     val observedNoise = horsesNoise + kidsImpact
 
     observers.forEach {
-        it.look(target = beach, observedNoiseLevel = observedNoise) }
+        it.look(beach, observedNoise)
+    }
 
     println("Локации: ${pavement.name}, ${beach.name}, ${sky.name}, ${unknownLands.name}")
     println("Шум сцены: $observedNoise (лошади=$horsesNoise, прыжки=$kidsImpact)")
@@ -60,6 +61,10 @@ fun main() {
     println()
     horses.forEachIndexed { i, h ->
         println("Horse #${i + 1}: type=${h.horseType}, location=${h.location.name}, noise=${h.currentNoiseLevel}")
-        println("  load=${h.currentLoadWeight()}/${h.maxCarryWeight}, baggage=${h.getBaggageSnapshot().map { it.name }}")
+        println(
+            "  load=${h.currentLoadWeight()}/${h.maxCarryWeight}, baggage=${
+                h.getBaggageSnapshot().map { it.name }
+            }"
+        )
     }
 }
