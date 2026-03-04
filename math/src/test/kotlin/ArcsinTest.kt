@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import kotlin.math.asin
@@ -30,6 +31,17 @@ class ArcsinTest {
     @DisplayName("NaN -> NaN")
     fun nan() {
         assertTrue(impl.approximate(Double.NaN, 20).isNaN())
+    }
+
+    @Test
+    @DisplayName("граничные проверки")
+    fun iterationsMustBePositive() {
+        assertThrows<IllegalArgumentException> {
+            impl.approximate(0.0, 0)
+        }
+        assertThrows<IllegalArgumentException> {
+            impl.approximate(0.0, -1)
+        }
     }
 
     @Test
