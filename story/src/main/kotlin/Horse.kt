@@ -41,7 +41,8 @@ class Horse(
      * 1\ проверяет ограничение по весу
      * 2\ проверяет достижимость локации
      * 3перемещает лошадь
-     * 4 обновляет шум (грохот от действия carry)
+     * 4\выгружает груз
+     * 5\обновляет шум (грохот от действия carry)
      */
     fun carry(cargo: Cargo, destination: Location) {
         if (!canAdd(cargo)) {
@@ -53,8 +54,9 @@ class Horse(
 
         baggage += cargo
         moveTo(destination)
+        baggage.remove(cargo)
 
-        recalcNoise(10)
+        recalcNoise(10 + cargo.noiseContribution)
     }
 
     private fun baseNoise(): Int = when (horseType) {

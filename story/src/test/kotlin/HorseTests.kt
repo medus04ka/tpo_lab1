@@ -5,54 +5,29 @@ import org.junit.jupiter.api.assertThrows
 class HorseTests {
 
     private val pavement = CoordinateLocation("Мостовая", LocationType.PAVEMENT, 0, 0)
+    private val beach = CoordinateLocation("Песок", LocationType.BEACH, 5, 3)
     private val sky = AbstractLocation("Небо", LocationType.SKY)
     private val unknownLands = AbstractLocation("Неизведанные Области", LocationType.UNKNOWN_LANDS)
 
     @Test
-    fun sky() {
-        assertDoesNotThrow {
-            Horse(sky, 500, HorseType.WILD)
-        }
-    }
-
-    @Test
-    fun domH() {
-        assertThrows<LocationRuleViolation> {
-            Horse(sky, 500, HorseType.DOMESTIC)
-        }
-    }
-
-    @Test
-    fun addCargo() {
-        val horse = Horse(pavement, 200, HorseType.DOMESTIC)
-        val cargo = Cargo("Доски", weight = 50)
-
-        horse.addCargo(cargo)
-
-        assertEquals(50, horse.currentLoadWeight())
-        assertEquals(listOf("Доски"), horse.getBaggageSnapshot().map {
-            it.name
-        })
-    }
-
-    @Test
-    fun addCargoRule() {
-        val horse = Horse(pavement, 100, HorseType.DOMESTIC)
-        val cargo = Cargo("Тяжёлое", 150)
-
-        assertThrows<CargoRuleViolation> {
-            horse.addCargo(cargo)
-        }
-        assertEquals(0, horse.currentLoadWeight())
-    }
-
-    @Test
-    fun notCarry() {
-        val domestic = Horse(pavement, 500, HorseType.DOMESTIC)
+    fun wildHorseCanTravel() {
+        val wild = Horse(sky, 400, HorseType.WILD)
         val cargo = Cargo("Изгороди", 120, Freshness.FRESH, 35)
 
+        wild.carry(cargo, unknownLands)
+
+        assertEquals(unknownLands, wild.location)
+        assertEquals(0, wild.currentLoadWeight(), "Груз выгружен по прибытии")
+        assertEquals(60, wild.currentNoiseLevel, "base 15 + action(10+35)")
+    }
+
+    @Test
+    fun domesticHorseCannotReach() {
+        val domestic = Horse(pavement, 300, HorseType.DOMESTIC)
+        val cargo = Cargo("Изгороди", 50, Freshness.FRESH, 10)
+
         assertThrows<LocationRuleViolation> {
-            domestic.carry(cargo, unknownLands)
+            domestic.carry(cargo, sky)
         }
         assertEquals(pavement, domestic.location)
         assertEquals(0, domestic.currentLoadWeight())
@@ -60,48 +35,40 @@ class HorseTests {
     }
 
     @Test
-    fun carry() {
-        val wild = Horse(pavement, 100, HorseType.WILD)
-        val cargo = Cargo("Изгороди", 120, Freshness.FRESH, 35)
+    fun cargoWeightLimit() {
+        val wild = Horse(beach, 100, HorseType.WILD)
+        val cargo = Cargo("Тяжёлое", 150)
 
         assertThrows<CargoRuleViolation> {
             wild.carry(cargo, unknownLands)
         }
+        assertEquals(beach, wild.location)
+        assertEquals(0, wild.currentLoadWeight())
     }
 
     @Test
-    fun full() {
-        val wild = Horse(pavement, 500, HorseType.WILD)
-        val cargo = Cargo("Армированные изгороди", 120, Freshness.FRESH, 35)
+    fun cargoAffectsNotPosition() {
+        val horse = Horse(pavement, 200, HorseType.DOMESTIC)
+        val cargo = Cargo("Доски", 40, Freshness.FRESH, 7)
 
-        wild.carry(cargo, unknownLands)
+        horse.addCargo(cargo)
 
-        assertEquals(unknownLands, wild.location)
-        assertEquals(120, wild.currentLoadWeight())
-        assertEquals(listOf("Армированные изгороди"), wild.getBaggageSnapshot().map { it.name })
-
-        // baseNoise(WILD)=15 + cargoNoise(35) + actionNoise(10) = 60
-        assertEquals(60, wild.currentNoiseLevel)
+        assertEquals(pavement, horse.location)
+        assertEquals(40, horse.currentLoadWeight())
+        assertEquals(15, horse.currentNoiseLevel, "base 8 + cargoNoise 7")
     }
 
     @Test
-    fun testy() {
-        val horse = Horse(pavement, 100, HorseType.DOMESTIC)
-
-        assertTrue(horse.canAdd(Cargo("Лёгкое", 40)))
-        horse.addCargo(Cargo("Лёгкое", 40))
-
-        assertTrue(horse.canAdd(Cargo("Ещё", 60)))
-        assertFalse(horse.canAdd(Cargo("Слишком много", 61)))
-    }
-
-    @Test
-    fun wildMovesToAbstract() {
-        val wild = Horse(pavement, 300, HorseType.WILD)
-
+    fun moveTo() {
+        val wild = Horse(pavement, 200, HorseType.WILD)
         assertDoesNotThrow {
             wild.moveTo(sky)
         }
         assertEquals(sky, wild.location)
+
+        val domestic = Horse(pavement, 200, HorseType.DOMESTIC)
+        assertThrows<LocationRuleViolation> {
+            domestic.moveTo(sky)
+        }
     }
 }

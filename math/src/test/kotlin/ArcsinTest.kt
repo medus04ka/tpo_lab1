@@ -35,7 +35,7 @@ class ArcsinTest {
 
     @Test
     @DisplayName("граничные проверки")
-    fun iterationsMustBePositive() {
+    fun iterations() {
         assertThrows<IllegalArgumentException> {
             impl.approximate(0.0, 0)
         }
@@ -96,6 +96,6 @@ class ArcsinTest {
     @DisplayName("around |x| = 0.9")
     @ValueSource(doubles = [0.899999, 0.9, 0.900001, -0.899999, -0.9, -0.900001])
     fun boundaryAtPointNine(x: Double) {
-        assertCloseToRef(x, iters = 120, eps = 1e-5)
+        assertCloseToRef(x,120,1e-5)
     }
 }
