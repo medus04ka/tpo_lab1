@@ -17,6 +17,9 @@ class Horse(
         recalcNoise()
     }
 
+    override fun canReach(target: Location): Boolean =
+        !target.isAbstract || horseType == HorseType.WILD
+
     fun getBaggageSnapshot(): List<Cargo> = baggage.toList()
 
     fun currentLoadWeight(): Int = baggage.sumOf {

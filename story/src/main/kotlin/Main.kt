@@ -42,7 +42,7 @@ fun main() {
     val observedNoise = horsesNoise + kidsImpact
 
     observers.forEach {
-        it.look(beach, observedNoise)
+        it.look(observedNoise)
     }
 
     println("Локации: ${pavement.name}, ${beach.name}, ${sky.name}, ${unknownLands.name}")

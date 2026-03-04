@@ -40,13 +40,13 @@ class HumanTests {
     fun lookingAt() {
         val o = NarratorObserver(pavement, 170)
 
-        o.look(beach,  0)
+        o.look(0)
         assertEquals(Mood.CALM, o.mood)
 
-        o.look(beach, 29)
+        o.look(29)
         assertEquals(Mood.CALM, o.mood)
 
-        o.look(beach,  30)
+        o.look(30)
         assertEquals(Mood.WORRIED, o.mood)
     }
 
