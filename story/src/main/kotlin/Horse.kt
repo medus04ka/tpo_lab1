@@ -1,71 +1,52 @@
 class Horse(
-    location: Location,
+    override var location: Location,
     val maxCarryWeight: Int,
-    val horseType: HorseType = HorseType.DOMESTIC
+    val horseType: HorseType
 ) : Animal(location) {
 
     private val baggage: MutableList<Cargo> = mutableListOf()
 
-    var currentNoiseLevel: Int = baseNoise()
+    var currentNoiseLevel: Int = 0
         private set
-
-    init {
-        require(maxCarryWeight > 0)
-        if (!location.isReachableBy(this)) {
-            throw LocationRuleViolation("Лошадь типа $horseType не может находиться в '${location.name}' (${location.type})")
-        }
-        recalcNoise()
-    }
-
-    override fun canReach(target: Location): Boolean =
-        !target.isAbstract || horseType == HorseType.WILD
 
     fun getBaggageSnapshot(): List<Cargo> = baggage.toList()
 
-    fun currentLoadWeight(): Int = baggage.sumOf {
-        it.weight
-    }
+    fun getCurrentLoadWeight(): Int = baggage.sumOf { it.weight }
 
-    fun canAdd(cargo: Cargo): Boolean = currentLoadWeight() + cargo.weight <= maxCarryWeight
+    fun canAdd(cargo: Cargo): Boolean {
+        return getCurrentLoadWeight() + cargo.weight <= maxCarryWeight
+    }
 
     fun addCargo(cargo: Cargo) {
-        if (!canAdd(cargo)) {
-            throw CargoRuleViolation("Перегруз: ${currentLoadWeight()} +++++++ ${cargo.weight} > $maxCarryWeight")
-        }
-        baggage += cargo
-        recalcNoise()
+        if (!canAdd(cargo))
+        baggage.add(cargo)
     }
 
-    /**
-     * Перевезти груз в локацию:
-     * 1\ проверяет ограничение по весу
-     * 2\ проверяет достижимость локации
-     * 3перемещает лошадь
-     * 4\выгружает груз
-     * 5\обновляет шум (грохот от действия carry)
-     */
     fun carry(cargo: Cargo, destination: Location) {
-        if (!canAdd(cargo)) {
-            throw CargoRuleViolation("Перегруз при carrry: ${currentLoadWeight()} + ${cargo.weight} > $maxCarryWeight")
-        }
-        if (!destination.isReachableBy(this)) {
-            throw LocationRuleViolation("Лошадь типа $horseType не может везти в '${destination.name}' (${destination.type})")
-        }
+        if (horseType != HorseType.WILD)
 
-        baggage += cargo
-        moveTo(destination)
-        baggage.remove(cargo)
+        if (destination.type != LocationType.UNKNOWN_LANDS)
 
-        recalcNoise(10 + cargo.noiseContribution)
+        if (cargo.freshness == Freshness.SPOILED)
+
+        if (!canAdd(cargo))
+
+        addCargo(cargo)
+
+        currentNoiseLevel = baseNoise() + recalcNoise(cargo.noiseContribution)
+
+        cargo.moveTo(location)
+        cargo.moveTo(destination)
     }
 
-    private fun baseNoise(): Int = when (horseType) {
-        HorseType.WILD -> 15
-        HorseType.DOMESTIC -> 8
+    fun baseNoise(): Int {
+        return when (horseType) {
+            HorseType.WILD -> 5
+            HorseType.DOMESTIC -> 2
+        }
     }
 
-    private fun recalcNoise(actionNoise: Int = 0) {
-        val cargoNoise = baggage.sumOf { it.noiseContribution }
-        currentNoiseLevel = baseNoise() + cargoNoise + actionNoise
+    fun recalcNoise(actionNoise: Int = 0): Int {
+        return baseNoise() + actionNoise + getCurrentLoadWeight() / 10
     }
 }

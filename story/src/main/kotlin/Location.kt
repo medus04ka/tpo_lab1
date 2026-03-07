@@ -3,6 +3,5 @@ interface Location {
     val type: LocationType
     val isAbstract: Boolean
 
-    fun isReachableBy(creature: Creature): Boolean =
-        creature.canReach(this)
+    fun isReachableBy(creature: Creature): Boolean
 }

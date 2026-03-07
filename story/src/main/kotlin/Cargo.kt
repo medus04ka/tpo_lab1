@@ -1,12 +1,11 @@
 class Cargo(
     val name: String,
     val weight: Int,
-    val freshness: Freshness = Freshness.FRESH,
-    val noiseContribution: Int = 0
+    val freshness: Freshness,
+    val noiseContribution: Int,
+    var location: Location? = null
 ) {
-    init {
-        require(name.isNotBlank())
-        require(weight > 0)
-        require(noiseContribution >= 0)
+    fun moveTo(target: Location) {
+        location = target
     }
 }

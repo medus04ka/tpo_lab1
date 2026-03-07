@@ -1,3 +1,3 @@
 abstract class Animal(
-    location: Location
+    override var location: Location
 ): Creature(location)

@@ -4,8 +4,13 @@ class CoordinateLocation (
     val x: Int,
     val y: Int
 ) : Location {
-    init {
-        require(type == LocationType.PAVEMENT || type == LocationType.BEACH)
-    }
     override val isAbstract: Boolean = false
+    override fun isReachableBy(creature: Creature): Boolean {
+        return when (type) {
+            LocationType.SKY -> false
+            LocationType.PAVEMENT -> true
+            LocationType.BEACH -> true
+            LocationType.UNKNOWN_LANDS -> true
+        }
+    }
 }
