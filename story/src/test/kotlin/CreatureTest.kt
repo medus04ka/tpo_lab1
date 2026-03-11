@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class CreatureTest {
 
@@ -21,15 +21,15 @@ class CreatureTest {
     }
 
     @Test
-    fun moveTo_ReachableLocation_ChangesLocation() {
+    fun changesLocation() {
         creature.moveTo(beach)
 
         assertEquals(beach, creature.location)
     }
 
     @Test
-    fun moveTo_UnreachableLocation_ThrowsException() {
-        assertThrows(IllegalStateException::class.java) {
+    fun throwsException() {
+        assertThrows<IllegalStateException> {
             creature.moveTo(sky)
         }
     }

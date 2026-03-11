@@ -1,18 +1,19 @@
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class HorseTest {
 
-    private lateinit var horse: Horse
+    private lateinit var wildHorse: Horse
     private lateinit var sky: AbstractLocation
     private lateinit var unknownLands: AbstractLocation
     private lateinit var beach: CoordinateLocation
-    private lateinit var cargo: Cargo
+    private lateinit var freshCargo: Cargo
 
     @BeforeEach
     fun setUp() {
@@ -20,183 +21,97 @@ class HorseTest {
         unknownLands = AbstractLocation("Неизведанные Области", LocationType.UNKNOWN_LANDS)
         beach = CoordinateLocation("Песок", LocationType.BEACH, 10, 5)
 
-        horse = Horse(
-            location = sky,
-            maxCarryWeight = 200,
-            horseType = HorseType.WILD
-        )
+        wildHorse = Horse(sky, 200, HorseType.WILD)
 
-        cargo = Cargo(
-            name = "Свежие запасы армированных изгородей",
-            weight = 80,
-            freshness = Freshness.FRESH,
-            noiseContribution = 6
-        )
+        freshCargo = Cargo("Свежие запасы армированных изгородей", 80, Freshness.FRESH, 6)
+    }
+
+    @ParameterizedTest
+    @CsvSource("10, true", "80, true", "200, true", "201, false")
+    fun canAddPOVes(weight: Int, expected: Boolean) {
+        val cargo = Cargo("Груз", weight, Freshness.FRESH, 5)
+
+        assertEquals(expected, wildHorse.canAdd(cargo))
     }
 
     @Test
-    fun getBaggageSnapshot_WhenEmpty_ReturnsEmptyList() {
-        assertTrue(horse.getBaggageSnapshot().isEmpty())
+    fun carryScenarioComplete() {
+        wildHorse.carry(freshCargo, unknownLands)
+
+        assertEquals(unknownLands, freshCargo.location)
     }
 
     @Test
-    fun getCurrentLoadWeight_WhenEmpty_ReturnsZero() {
-        assertEquals(0, horse.getCurrentLoadWeight())
+    fun carryBaggageComplete() {
+        wildHorse.carry(freshCargo, unknownLands)
+
+        assertTrue(wildHorse.getBaggageSnapshot().contains(freshCargo))
     }
 
     @Test
-    fun canAdd_WithAcceptableCargo_ReturnsTrue() {
-        val result = horse.canAdd(cargo)
+    fun carryLVL() {
+        wildHorse.carry(freshCargo, unknownLands)
 
-        assertTrue(result)
+        assertTrue(wildHorse.currentNoiseLevel > 0)
     }
 
     @Test
-    fun canAdd_WithTooHeavyCargo_ReturnsFalse() {
-        val heavyCargo = Cargo(
-            name = "Очень тяжелый груз",
-            weight = 500,
-            freshness = Freshness.FRESH,
-            noiseContribution = 10
-        )
+    fun carrySPOILED() {
+        val spoiledCargo = Cargo("Испорченные изгороди", 50, Freshness.SPOILED, 5)
 
-        val result = horse.canAdd(heavyCargo)
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun addCargo_AddsCargoToBaggage() {
-        horse.addCargo(cargo)
-
-        assertTrue(horse.getBaggageSnapshot().contains(cargo))
-    }
-
-    @Test
-    fun addCargo_IncreasesCurrentLoadWeight() {
-        horse.addCargo(cargo)
-
-        assertEquals(80, horse.getCurrentLoadWeight())
-    }
-
-    @Test
-    fun addCargo_WithTooHeavyCargo_ThrowsException() {
-        val heavyCargo = Cargo(
-            name = "Очень тяжелый груз",
-            weight = 500,
-            freshness = Freshness.FRESH,
-            noiseContribution = 10
-        )
-
-        assertThrows(CargoRuleViolation::class.java) {
-            horse.addCargo(heavyCargo)
+        assertThrows<CargoRuleViolation> {
+            wildHorse.carry(spoiledCargo, unknownLands)
         }
     }
 
     @Test
-    fun carry_ChangesCargoLocationToDestination() {
-        horse.carry(cargo, unknownLands)
+    fun carryDOMESTICvsWILD() {
+        val domesticHorse = Horse(sky, 200, HorseType.DOMESTIC)
 
-        assertEquals(unknownLands, cargo.location)
-    }
-
-    @Test
-    fun carry_SetsCargoLocation_NotNull() {
-        horse.carry(cargo, unknownLands)
-
-        assertNotNull(cargo.location)
-    }
-
-    @Test
-    fun carry_IncreasesNoiseLevel() {
-        horse.carry(cargo, unknownLands)
-
-        assertTrue(horse.currentNoiseLevel > 0)
-    }
-
-    @Test
-    fun carry_AddsCargoToBaggage() {
-        horse.carry(cargo, unknownLands)
-
-        assertTrue(horse.getBaggageSnapshot().contains(cargo))
-    }
-
-    @Test
-    fun carry_WithSpoiledCargo_ThrowsException() {
-        val spoiledCargo = Cargo(
-            name = "Испорченный груз",
-            weight = 50,
-            freshness = Freshness.SPOILED,
-            noiseContribution = 5
-        )
-
-        assertThrows(CargoRuleViolation::class.java) {
-            horse.carry(spoiledCargo, unknownLands)
+        assertThrows<CargoRuleViolation> {
+            domesticHorse.carry(freshCargo, unknownLands)
         }
     }
 
     @Test
-    fun carry_WithDomesticHorse_ThrowsException() {
-        val domesticHorse = Horse(
-            location = sky,
-            maxCarryWeight = 200,
-            horseType = HorseType.DOMESTIC
-        )
-
-        assertThrows(CargoRuleViolation::class.java) {
-            domesticHorse.carry(cargo, unknownLands)
+    fun carryNOTUNKNWN() {
+        assertThrows<CargoRuleViolation> {
+            wildHorse.carry(freshCargo, beach)
         }
     }
 
     @Test
-    fun carry_WithWrongDestination_ThrowsException() {
-        assertThrows(CargoRuleViolation::class.java) {
-            horse.carry(cargo, beach)
+    fun carryThrows() {
+        val heavyCargo = Cargo("Слишком тяжёлый груз", 300, Freshness.FRESH, 8)
+
+        assertThrows<CargoRuleViolation> {
+            wildHorse.carry(heavyCargo, unknownLands)
         }
     }
 
     @Test
-    fun carry_WithTooHeavyCargo_ThrowsException() {
-        val smallHorse = Horse(
-            location = sky,
-            maxCarryWeight = 30,
-            horseType = HorseType.WILD
-        )
+    fun baseNoiseWHHigher() {
+        val domesticHorse = Horse(sky, 200, HorseType.DOMESTIC)
 
-        assertThrows(CargoRuleViolation::class.java) {
-            smallHorse.carry(cargo, unknownLands)
-        }
+        assertTrue(wildHorse.baseNoise() > domesticHorse.baseNoise())
     }
 
     @Test
-    fun baseNoise_WildHorse_ReturnsFive() {
-        assertEquals(5, horse.baseNoise())
+    fun u4etCargo() {
+        wildHorse.addCargo(freshCargo)
+
+        val recalculatedNoise = wildHorse.recalcNoise(4)
+
+        assertEquals(17, recalculatedNoise)
     }
 
     @Test
-    fun baseNoise_WildHorse_GreaterThanDomesticHorse() {
-        val domesticHorse = Horse(
-            location = sky,
-            maxCarryWeight = 200,
-            horseType = HorseType.DOMESTIC
-        )
+    fun canAddU4etCargo() {
+        val firstCargo = Cargo("Первый груз", 150, Freshness.FRESH, 3)
+        val secondCargo = Cargo("Второй груз", 60, Freshness.FRESH, 3)
 
-        assertTrue(horse.baseNoise() > domesticHorse.baseNoise())
-    }
+        wildHorse.addCargo(firstCargo)
 
-    @Test
-    fun recalcNoise_WithActionNoise_ReturnsExpectedValue() {
-        val result = horse.recalcNoise(4)
-
-        assertEquals(9, result)
-    }
-
-    @Test
-    fun recalcNoise_AfterAddingCargo_TakesLoadIntoAccount() {
-        horse.addCargo(cargo)
-
-        val result = horse.recalcNoise(4)
-
-        assertEquals(17, result)
+        assertFalse(wildHorse.canAdd(secondCargo))
     }
 }

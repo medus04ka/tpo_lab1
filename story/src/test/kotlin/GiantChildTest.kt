@@ -1,8 +1,10 @@
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class GiantChildTest {
 
@@ -16,32 +18,20 @@ class GiantChildTest {
         beach = CoordinateLocation("Песок", LocationType.BEACH, 5, 5)
         pavement = CoordinateLocation("Мостовая", LocationType.PAVEMENT, 0, 0)
         sky = AbstractLocation("Небо", LocationType.SKY)
+
         child = GiantChild(beach, 250)
     }
 
-    @Test
-    fun jump_OnBeach_ChangesLocation() {
-        child.jump(beach, JumpType.HEAVY)
+    @ParameterizedTest
+    @CsvSource("LIGHT, 3", "HEAVY, 9")
+    fun jumpLVL(type: JumpType, expectedNoise: Int) {
+        val actualNoise = child.jump(beach, type)
 
-        assertEquals(beach, child.location)
+        assertEquals(expectedNoise, actualNoise)
     }
 
     @Test
-    fun jump_WithLightType_ReturnsLightNoise() {
-        val noise = child.jump(beach, JumpType.LIGHT)
-
-        assertEquals(3, noise)
-    }
-
-    @Test
-    fun jump_WithHeavyType_ReturnsHeavyNoise() {
-        val noise = child.jump(beach, JumpType.HEAVY)
-
-        assertEquals(9, noise)
-    }
-
-    @Test
-    fun jump_HeavyNoiseGreaterThanLightNoise() {
+    fun jumpLVLDOTOSHNO() {
         val lightNoise = child.jump(beach, JumpType.LIGHT)
         val heavyNoise = child.jump(beach, JumpType.HEAVY)
 
@@ -49,15 +39,22 @@ class GiantChildTest {
     }
 
     @Test
-    fun jump_OnPavement_ThrowsException() {
-        assertThrows(LocationRuleViolation::class.java) {
+    fun jumpONLYBeachChild() {
+        child.jump(beach, JumpType.HEAVY)
+
+        assertEquals(beach, child.location)
+    }
+
+    @Test
+    fun jumpNOTBeachChild() {
+        assertThrows<LocationRuleViolation> {
             child.jump(pavement, JumpType.HEAVY)
         }
     }
 
     @Test
-    fun jump_OnSky_ThrowsException() {
-        assertThrows(LocationRuleViolation::class.java) {
+    fun jumpSKy() {
+        assertThrows<LocationRuleViolation> {
             child.jump(sky, JumpType.LIGHT)
         }
     }

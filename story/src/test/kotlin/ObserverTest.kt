@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class ObserverTest {
 
@@ -16,46 +18,33 @@ class ObserverTest {
     }
 
     @Test
-    fun sit_ChangesPoseToSitting() {
+    fun sit() {
         observer.sit(pavement)
 
         assertEquals(Pose.SITTING, observer.pose)
     }
 
     @Test
-    fun sit_ChangesLocation() {
+    fun sitChangesLocation() {
         observer.sit(beach)
 
         assertEquals(beach, observer.location)
     }
 
-    @Test
-    fun look_WithLowNoise_SetsCalmMood() {
-        observer.look(beach, 3)
+    @ParameterizedTest
+    @CsvSource("0, CALM", "3, CALM", "6, CALM", "7, WORRIED", "10, WORRIED")
+    fun look(noise: Int, expectedMood: Mood) {
+        observer.look(beach,noise)
 
-        assertEquals(Mood.CALM, observer.mood)
+        assertEquals(expectedMood, observer.mood)
     }
 
     @Test
-    fun look_WithHighNoise_SetsWorriedMood() {
-        observer.look(beach, 9)
-
-        assertEquals(Mood.WORRIED, observer.mood)
-    }
-
-    @Test
-    fun look_WithThresholdNoise_SetsWorriedMood() {
-        observer.look(beach, 7)
-
-        assertEquals(Mood.WORRIED, observer.mood)
-    }
-
-    @Test
-    fun look_MultipleCalls_ChangesMood() {
-        observer.look(beach, 2)
+    fun lookCALM() {
+        observer.look(beach,2)
         assertEquals(Mood.CALM, observer.mood)
 
-        observer.look(beach, 10)
+        observer.look(beach,9)
         assertEquals(Mood.WORRIED, observer.mood)
     }
 }

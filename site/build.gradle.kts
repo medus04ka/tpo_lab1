@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    jacoco
 }
 
 group = "org.example"
