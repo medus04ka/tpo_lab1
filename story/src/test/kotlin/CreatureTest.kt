@@ -33,4 +33,18 @@ class CreatureTest {
             creature.moveTo(sky)
         }
     }
+
+    @Test
+    fun throwsWhenLocation() {
+        val start = CoordinateLocation("Старт", LocationType.PAVEMENT, 0, 0)
+        val far = CoordinateLocation("Далеко", LocationType.BEACH, 10, 0)
+
+        val limitedCreature = object : Creature(start) {
+            override fun maxDistance() = 5.0
+        }
+
+        assertThrows<IllegalStateException> {
+            limitedCreature.moveTo(far)
+        }
+    }
 }

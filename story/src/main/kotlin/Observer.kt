@@ -3,18 +3,16 @@ abstract class Observer(
     override val heightCm: Int
 ) : Human(location, heightCm) {
 
-    var mood: Mood = Mood.CALM
-        protected set
+    var isSitting: Boolean = false
 
-    var pose: Pose = Pose.STANDING
-        protected set
+    var isWorried: Boolean = false
 
     fun sit(where: Location) {
         moveTo(where)
-        pose = Pose.SITTING
+        isSitting = true
     }
 
-    fun look(target: Location, observedNoiseLevel: Int = 0) {
-        mood = if (observedNoiseLevel >= 7) Mood.WORRIED else Mood.CALM
+    fun look(observedNoiseLevel: Int = 0) {
+        isWorried = observedNoiseLevel >= 7
     }
 }

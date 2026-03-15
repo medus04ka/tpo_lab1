@@ -23,13 +23,13 @@ class HorseTest {
 
         wildHorse = Horse(sky, 200, HorseType.WILD)
 
-        freshCargo = Cargo("Свежие запасы армированных изгородей", 80, Freshness.FRESH, 6)
+        freshCargo = Cargo("Свежие запасы армированных изгородей", 80, true, 6)
     }
 
     @ParameterizedTest
     @CsvSource("10, true", "80, true", "200, true", "201, false")
     fun canAddPOVes(weight: Int, expected: Boolean) {
-        val cargo = Cargo("Груз", weight, Freshness.FRESH, 5)
+        val cargo = Cargo("Груз", weight, true, 5)
 
         assertEquals(expected, wildHorse.canAdd(cargo))
     }
@@ -45,7 +45,7 @@ class HorseTest {
     fun carryBaggageComplete() {
         wildHorse.carry(freshCargo, unknownLands)
 
-        assertTrue(wildHorse.getBaggageSnapshot().contains(freshCargo))
+        assertTrue(wildHorse.getBaggageList().contains(freshCargo))
     }
 
     @Test
@@ -57,7 +57,7 @@ class HorseTest {
 
     @Test
     fun carrySPOILED() {
-        val spoiledCargo = Cargo("Испорченные изгороди", 50, Freshness.SPOILED, 5)
+        val spoiledCargo = Cargo("Испорченные изгороди", 50, false, 5)
 
         assertThrows<CargoRuleViolation> {
             wildHorse.carry(spoiledCargo, unknownLands)
@@ -82,10 +82,19 @@ class HorseTest {
 
     @Test
     fun carryThrows() {
-        val heavyCargo = Cargo("Слишком тяжёлый груз", 300, Freshness.FRESH, 8)
+        val heavyCargo = Cargo("Слишком тяжёлый груз", 300, true, 8)
 
         assertThrows<CargoRuleViolation> {
             wildHorse.carry(heavyCargo, unknownLands)
+        }
+    }
+
+    @Test
+    fun addCargoThrows() {
+        val heavyCargo = Cargo("Тяжёлый груз", 300, true, 5)
+
+        assertThrows<CargoRuleViolation> {
+            wildHorse.addCargo(heavyCargo)
         }
     }
 
@@ -107,11 +116,33 @@ class HorseTest {
 
     @Test
     fun canAddU4etCargo() {
-        val firstCargo = Cargo("Первый груз", 150, Freshness.FRESH, 3)
-        val secondCargo = Cargo("Второй груз", 60, Freshness.FRESH, 3)
+        val firstCargo = Cargo("Первый груз", 150, true, 3)
+        val secondCargo = Cargo("Второй груз", 60, true, 3)
 
         wildHorse.addCargo(firstCargo)
 
         assertFalse(wildHorse.canAdd(secondCargo))
+    }
+
+    @Test
+    fun horseMaxDistance() {
+        val start = CoordinateLocation("Старт", LocationType.BEACH, 0, 0)
+        val target = CoordinateLocation("Цель", LocationType.BEACH, 20, 0)
+        val horse = Horse(start, 200, HorseType.WILD)
+
+        horse.moveTo(target)
+
+        assertEquals(target, horse.location)
+    }
+
+    @Test
+    fun horseThrows() {
+        val start = CoordinateLocation("Старт", LocationType.BEACH, 0, 0)
+        val target = CoordinateLocation("Очень далеко", LocationType.BEACH, 100, 0)
+        val horse = Horse(start, 200, HorseType.WILD)
+
+        assertThrows<IllegalStateException> {
+            horse.moveTo(target)
+        }
     }
 }

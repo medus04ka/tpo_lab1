@@ -26,18 +26,18 @@ class ScenarioTest {
         giantChild = GiantChild(beach,260)
         horse = Horse(sky,200,HorseType.WILD)
 
-        cargo = Cargo("Свежие запасы армированных изгородей",80, Freshness.FRESH, 6)
+        cargo = Cargo("Свежие запасы армированных изгородей", 80, true, 6)
     }
 
     @Test
     fun story() {
         observer.sit(pavement)
         val jumpNoise = giantChild.jump(beach, JumpType.HEAVY)
-        observer.look(beach,jumpNoise)
+        observer.look(jumpNoise)
         horse.carry(cargo, unknownLands)
 
-        assertEquals(Pose.SITTING, observer.pose)
-        assertEquals(Mood.WORRIED, observer.mood)
+        assertTrue(observer.isSitting)
+        assertTrue(observer.isWorried)
         assertTrue(jumpNoise >= 7)
         assertEquals(unknownLands, cargo.location)
         assertTrue(horse.currentNoiseLevel > 0)

@@ -1,4 +1,6 @@
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -21,7 +23,7 @@ class ObserverTest {
     fun sit() {
         observer.sit(pavement)
 
-        assertEquals(Pose.SITTING, observer.pose)
+        assertTrue(observer.isSitting)
     }
 
     @Test
@@ -32,19 +34,19 @@ class ObserverTest {
     }
 
     @ParameterizedTest
-    @CsvSource("0, CALM", "3, CALM", "6, CALM", "7, WORRIED", "10, WORRIED")
-    fun look(noise: Int, expectedMood: Mood) {
-        observer.look(beach,noise)
+    @CsvSource("0, false", "3, false", "6, false", "7, true", "10, true")
+    fun look(noise: Int, expectedWorried: Boolean) {
+        observer.look(noise)
 
-        assertEquals(expectedMood, observer.mood)
+        assertEquals(expectedWorried, observer.isWorried)
     }
 
     @Test
     fun lookCALM() {
-        observer.look(beach,2)
-        assertEquals(Mood.CALM, observer.mood)
+        observer.look(2)
+        assertFalse(observer.isWorried)
 
-        observer.look(beach,9)
-        assertEquals(Mood.WORRIED, observer.mood)
+        observer.look(9)
+        assertTrue(observer.isWorried)
     }
 }

@@ -2,14 +2,16 @@ class Horse(
     override var location: Location,
     val maxCarryWeight: Int,
     val horseType: HorseType
-) : Animal(location) {
+) : Creature(location) {
+
+    override fun maxDistance(): Double = 52.0
 
     private val baggage: MutableList<Cargo> = mutableListOf()
 
     var currentNoiseLevel: Int = 0
         private set
 
-    fun getBaggageSnapshot(): List<Cargo> = baggage.toList()
+    fun getBaggageList(): List<Cargo> = baggage.toList()
 
     fun getCurrentLoadWeight(): Int = baggage.sumOf {
         it.weight
@@ -35,7 +37,7 @@ class Horse(
             throw CargoRuleViolation("Груз можно доставлять ТОЛЬКО в Неизведанные Области, потому что принеси то НЕ знаю что")
         }
 
-        if (cargo.freshness == Freshness.SPOILED) {
+        if (!cargo.isFresh) {
             throw CargoRuleViolation("Испорченный груз нельзя перевозить, иначе зачем его везли???")
         }
 
@@ -45,7 +47,7 @@ class Horse(
 
         addCargo(cargo)
 
-        currentNoiseLevel = baseNoise() + recalcNoise(cargo.noiseContribution)
+        currentNoiseLevel = recalcNoise(cargo.noiseContribution)
 
         cargo.moveTo(location)
         cargo.moveTo(destination)

@@ -1,7 +1,7 @@
 class Cargo(
     val name: String,
     val weight: Int,
-    val freshness: Freshness,
+    val isFresh: Boolean,
     val noiseContribution: Int,
     var location: Location? = null
 ) {
