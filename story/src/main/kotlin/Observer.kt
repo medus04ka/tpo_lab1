@@ -1,4 +1,4 @@
-abstract class Observer(
+class Observer(
     override var location: Location,
     override val heightCm: Int
 ) : Human(location, heightCm) {

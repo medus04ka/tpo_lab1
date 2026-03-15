@@ -11,7 +11,7 @@ fun main() {
     val sky = AbstractLocation("Небо", LocationType.SKY)
     val unknownLands = AbstractLocation("Неизведанные Области", LocationType.UNKNOWN_LANDS)
 
-    val observer = NarratorObserver(pavement,170)
+    val observer = Observer(pavement,170)
     val giantChild = GiantChild(beach,260)
     val horse = Horse(sky,200,HorseType.WILD)
 

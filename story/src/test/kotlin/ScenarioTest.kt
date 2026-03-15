@@ -10,7 +10,7 @@ class ScenarioTest {
     private lateinit var sky: AbstractLocation
     private lateinit var unknownLands: AbstractLocation
 
-    private lateinit var observer: NarratorObserver
+    private lateinit var observer: Observer
     private lateinit var giantChild: GiantChild
     private lateinit var horse: Horse
     private lateinit var cargo: Cargo
@@ -22,7 +22,7 @@ class ScenarioTest {
         sky = AbstractLocation("Небо", LocationType.SKY)
         unknownLands = AbstractLocation("Неизведанные Области", LocationType.UNKNOWN_LANDS)
 
-        observer = NarratorObserver(pavement,170)
+        observer = Observer(pavement,170)
         giantChild = GiantChild(beach,260)
         horse = Horse(sky,200,HorseType.WILD)
 

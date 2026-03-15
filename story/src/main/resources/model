@@ -1,0 +1,111 @@
+@StarUML
+
+enum JumpType {
+    LIGHT
+    HEAVY
+}
+
+enum HorseType {
+    WILD
+    DOMESTIC
+}
+
+enum LocationType {
+    PAVEMENT
+    BEACH
+    SKY
+    UNKNOWN_LANDS
+}
+
+class LocationRuleViolation
+class CargoRuleViolation
+
+interface Location {
+    +name: String
+    +type: LocationType
+    +isAbstract: Boolean
+    +isReachableBy(creature: Creature): Boolean
+}
+
+class AbstractLocation {
+    +name: String
+    +type: LocationType
+    +isAbstract: Boolean
+    +isReachableBy(creature: Creature): Boolean
+}
+
+class CoordinateLocation {
+    +name: String
+    +type: LocationType
+    +x: Int
+    +y: Int
+    +isAbstract: Boolean
+    +isReachableBy(creature: Creature): Boolean
+    +distanceTo(other: CoordinateLocation): Double
+}
+
+class Cargo {
+    +name: String
+    +weight: Int
+    +isFresh: Boolean
+    +noiseContribution: Int
+    +location: Location?
+    +moveTo(target: Location): Unit
+}
+
+abstract class Creature {
+    +location: Location
+    +maxDistance(): Double
+    +moveTo(target: Location): Unit
+}
+
+abstract class Human {
+    +heightCm: Int
+}
+
+class Observer {
+    +isWorried: Boolean
+    +isSitting: Boolean
+    +sit(where: Location): Unit
+    +look(target: Location, observedNoiseLevel: Int = 0): Unit
+}
+
+class GiantChild {
+    +jump(where: Location, type: JumpType): Int
+}
+
+class Horse {
+    -baggage: MutableList<Cargo>
+    +maxCarryWeight: Int
+    +horseType: HorseType
+    +currentNoiseLevel: Int
+    +maxDistance(): Double
+    +getBaggageList(): List<Cargo>
+    +getCurrentLoadWeight(): Int
+    +canAdd(cargo: Cargo): Boolean
+    +addCargo(cargo: Cargo): Unit
+    +carry(cargo: Cargo, destination: Location): Unit
+    +baseNoise(): Int
+    +recalcNoise(actionNoise: Int = 0): Int
+}
+
+Location <|.. AbstractLocation
+Location <|.. CoordinateLocation
+
+Creature <|-- Human
+Creature <|-- Horse
+Human <|-- GiantChild
+Human <|-- Observer
+
+Creature --> Location : location
+Cargo --> Location : location
+Horse *-- Cargo : baggage
+
+Location ..> LocationType
+GiantChild ..> JumpType
+Horse ..> HorseType
+
+GiantChild ..> LocationRuleViolation
+Horse ..> CargoRuleViolation
+
+@EndUML

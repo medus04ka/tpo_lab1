@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource
 
 class ObserverTest {
 
-    private lateinit var observer: NarratorObserver
+    private lateinit var observer: Observer
     private lateinit var pavement: CoordinateLocation
     private lateinit var beach: CoordinateLocation
 
@@ -16,7 +16,7 @@ class ObserverTest {
     fun setUp() {
         pavement = CoordinateLocation("Мостовая", LocationType.PAVEMENT, 0, 0)
         beach = CoordinateLocation("Песок", LocationType.BEACH, 10, 5)
-        observer = NarratorObserver(pavement, 170)
+        observer = Observer(pavement, 170)
     }
 
     @Test
