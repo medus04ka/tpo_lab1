@@ -24,7 +24,7 @@ class ScenarioTest {
 
         observer = Observer(pavement,170)
         giantChild = GiantChild(beach,260)
-        horse = Horse(sky,200,HorseType.WILD)
+        horse = Horse(sky,200,true)
 
         cargo = Cargo("Свежие запасы армированных изгородей", 80, true, 6)
     }
@@ -32,7 +32,7 @@ class ScenarioTest {
     @Test
     fun story() {
         observer.sit(pavement)
-        val jumpNoise = giantChild.jump(beach, JumpType.HEAVY)
+        val jumpNoise = giantChild.jump(beach, false)
         observer.look(jumpNoise)
         horse.carry(cargo, unknownLands)
 

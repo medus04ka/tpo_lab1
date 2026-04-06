@@ -3,7 +3,7 @@ class GiantChild(
     override val heightCm: Int
 ) : Human(location, heightCm) {
 
-    fun jump(where: Location, type: JumpType): Int {
+    fun jump(where: Location, isLight: Boolean): Int {
         if (where.type != LocationType.BEACH) {
             throw LocationRuleViolation("Огромные дети могут тяжело или легко прыгать только по песку")
         }
@@ -11,10 +11,7 @@ class GiantChild(
         if (location is CoordinateLocation && where is CoordinateLocation) {
             val distance = (location as CoordinateLocation).distanceTo(where)
 
-            val maxJumpDistance = when (type) {
-                JumpType.LIGHT -> 5.0
-                JumpType.HEAVY -> 10.0
-            }
+            val maxJumpDistance = if (isLight) 5.0 else 10.0
 
             if (distance > maxJumpDistance) {
                 throw LocationRuleViolation("Слишком ужасно для ребенка так прыгать???? лол")
@@ -22,9 +19,6 @@ class GiantChild(
         }
 
         moveTo(where)
-        return when (type) {
-            JumpType.LIGHT -> 3
-            JumpType.HEAVY -> 9
-        }
+        return if (isLight) 3 else 9
     }
 }

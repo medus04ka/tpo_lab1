@@ -68,4 +68,12 @@ class LocationTest {
     fun abstractLocation() {
         assertTrue(sky.isAbstract)
     }
+
+    @Test
+    fun abstractLocationNotSky() {
+        val location = AbstractLocation("Земля", LocationType.BEACH)
+        val creature = object : Creature(location) {}
+
+        assertTrue(location.isReachableBy(creature))
+    }
 }

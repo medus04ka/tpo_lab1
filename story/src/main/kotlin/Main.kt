@@ -13,13 +13,13 @@ fun main() {
 
     val observer = Observer(pavement,170)
     val giantChild = GiantChild(beach,260)
-    val horse = Horse(sky,200,HorseType.WILD)
+    val horse = Horse(sky,200,true)
 
     val fenceCargo = Cargo("Свежие запасы армированных изгородей",80,true,6)
 
     observer.sit(pavement)
 
-    val jumpNoise = giantChild.jump(beach, JumpType.HEAVY)
+    val jumpNoise = giantChild.jump(beach, false)
     observer.look(jumpNoise)
 
     horse.carry(fenceCargo, unknownLands)
@@ -28,5 +28,4 @@ fun main() {
     println("Настроение наблюдателя: ${observer.isWorried}")
     println("Шум от прыжка: $jumpNoise")
     println("Шум лошади при перевозке: ${horse.currentNoiseLevel}")
-    println("Локация груза: ${fenceCargo.location?.name}")
 }

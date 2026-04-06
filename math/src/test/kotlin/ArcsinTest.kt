@@ -98,4 +98,21 @@ class ArcsinTest {
     fun boundaryAtPointNine(x: Double) {
         assertCloseToRef(x,120,1e-5)
     }
+
+    @Test
+    fun sqrt() {
+        val method = Arcsin::class.java.getDeclaredMethod("sqrt", Double::class.java)
+        method.isAccessible = true
+        val arcsin = Arcsin()
+        val nanResult = method.invoke(arcsin, Double.NaN) as Double
+        assertTrue(nanResult.isNaN())
+        val negativeResult = method.invoke(arcsin, -1.0) as Double
+        assertTrue(negativeResult.isNaN())
+        val zeroResult = method.invoke(arcsin, 0.0) as Double
+        assertEquals(0.0, zeroResult)
+        val bigResult = method.invoke(arcsin, 4.0) as Double
+        assertEquals(2.0, bigResult, 1e-6)
+        val smallResult = method.invoke(arcsin, 0.25) as Double
+        assertEquals(0.5, smallResult, 1e-6)
+    }
 }

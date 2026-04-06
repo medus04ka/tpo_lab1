@@ -9,7 +9,7 @@ class BST {
     var root: BNode? = null
         private set
 
-    val tracePath: MutableList<Char> = mutableListOf()
+    val tracePath: MutableList<String> = mutableListOf()
     fun clearTrace() = tracePath.clear()
 
     fun insert(key: Int) {
@@ -17,9 +17,20 @@ class BST {
     }
 
     private fun insertRec(node: BNode?, key: Int): BNode {
-        if (node == null) return BNode(key)
-        if (key < node.value) node.left = insertRec(node.left, key)
-        else node.right = insertRec(node.right, key)
+        if (node == null) {
+            tracePath += "Insert($key)"
+            return BNode(key)
+        }
+
+        tracePath += "At(${node.value})"
+
+        if (key < node.value) {
+            tracePath += "L"
+            node.left = insertRec(node.left, key)
+        } else {
+            tracePath += "R"
+            node.right = insertRec(node.right, key)
+        }
         return node
     }
 
@@ -46,18 +57,21 @@ class BST {
 
     private fun searchRec(node: BNode?, key: Int): BNode? {
         if (node == null) {
-            tracePath += 'N'
+            tracePath += "N(null)"
             return null
         }
+
+        tracePath += "At(${node.value})"
+
         if (node.value == key) {
-            tracePath += 'F'
+            tracePath += "F(${node.value})"
             return node
         }
         return if (key < node.value) {
-            tracePath += 'L'
+            tracePath += "L"
             searchRec(node.left, key)
         } else {
-            tracePath += 'R'
+            tracePath += "R"
             searchRec(node.right, key)
         }
     }
@@ -68,31 +82,41 @@ class BST {
 
     private fun deleteRec(node: BNode?, key: Int): BNode? {
         if (node == null) {
-            tracePath += 'N'
+            tracePath += "N(null)"
             return null
         }
 
+        tracePath += "At(${node.value})"
+
         if (key < node.value) {
-            tracePath += 'L'
+            tracePath += "L"
             node.left = deleteRec(node.left, key)
             return node
         }
 
         if (key > node.value) {
-            tracePath += 'R'
+            tracePath += "R"
             node.right = deleteRec(node.right, key)
             return node
         }
 
-        tracePath += 'F'
+        tracePath += "F(${node.value})"
 
-        if (node.left == null && node.right == null)
+        if (node.left == null && node.right == null) {
+            tracePath += "DeleteLeaf"
             return null
+        }
 
-        if (node.left == null || node.right == null)
+        if (node.left == null || node.right == null) {
+            tracePath += "DeleteOneChild"
             return node.left ?: node.right
+        }
+
+        tracePath += "DeleteTwoChildren"
 
         val succ = minNode(node.right!!)
+        tracePath += "Successor(${succ.value})"
+
         node.value = succ.value
         node.right = deleteRec(node.right, succ.value)
         return node

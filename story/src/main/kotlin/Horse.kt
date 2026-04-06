@@ -1,7 +1,7 @@
 class Horse(
     override var location: Location,
     val maxCarryWeight: Int,
-    val horseType: HorseType
+    val isWild : Boolean
 ) : Creature(location) {
 
     override fun maxDistance(): Double = 52.0
@@ -29,7 +29,7 @@ class Horse(
     }
 
     fun carry(cargo: Cargo, destination: Location) {
-        if (horseType != HorseType.WILD) {
+        if (!isWild) {
             throw CargoRuleViolation("Разрешено только диким лошадкам перевозить грузы, тут рабство.")
         }
 
@@ -54,11 +54,8 @@ class Horse(
     }
 
     fun baseNoise(): Int {
-        return when (horseType) {
-            HorseType.WILD -> 5
-            HorseType.DOMESTIC -> 2
-        }
-    }
+        return if (isWild) 5 else 2
+}
 
     fun recalcNoise(actionNoise: Int = 0): Int {
         return baseNoise() + actionNoise + getCurrentLoadWeight() / 10

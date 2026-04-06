@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
 class CreatureTest {
@@ -47,4 +48,18 @@ class CreatureTest {
             limitedCreature.moveTo(far)
         }
     }
+
+    @Test
+    fun moveToAbstract() {
+        val start = CoordinateLocation("Старт", LocationType.BEACH, 0, 0)
+        val target = AbstractLocation("Абстракт", LocationType.BEACH)
+
+        val creature = object : Creature(start) {}
+
+        assertDoesNotThrow {
+            creature.moveTo(target)
+        }
+    }
+
+
 }

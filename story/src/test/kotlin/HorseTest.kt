@@ -21,7 +21,7 @@ class HorseTest {
         unknownLands = AbstractLocation("Неизведанные Области", LocationType.UNKNOWN_LANDS)
         beach = CoordinateLocation("Песок", LocationType.BEACH, 10, 5)
 
-        wildHorse = Horse(sky, 200, HorseType.WILD)
+        wildHorse = Horse(sky, 200, true)
 
         freshCargo = Cargo("Свежие запасы армированных изгородей", 80, true, 6)
     }
@@ -66,7 +66,7 @@ class HorseTest {
 
     @Test
     fun carryDOMESTICvsWILD() {
-        val domesticHorse = Horse(sky, 200, HorseType.DOMESTIC)
+        val domesticHorse = Horse(sky, 200, false)
 
         assertThrows<CargoRuleViolation> {
             domesticHorse.carry(freshCargo, unknownLands)
@@ -100,7 +100,7 @@ class HorseTest {
 
     @Test
     fun baseNoiseWHHigher() {
-        val domesticHorse = Horse(sky, 200, HorseType.DOMESTIC)
+        val domesticHorse = Horse(sky, 200, false)
 
         assertTrue(wildHorse.baseNoise() > domesticHorse.baseNoise())
     }
@@ -128,7 +128,7 @@ class HorseTest {
     fun horseMaxDistance() {
         val start = CoordinateLocation("Старт", LocationType.BEACH, 0, 0)
         val target = CoordinateLocation("Цель", LocationType.BEACH, 20, 0)
-        val horse = Horse(start, 200, HorseType.WILD)
+        val horse = Horse(start, 200, true)
 
         horse.moveTo(target)
 
@@ -139,7 +139,7 @@ class HorseTest {
     fun horseThrows() {
         val start = CoordinateLocation("Старт", LocationType.BEACH, 0, 0)
         val target = CoordinateLocation("Очень далеко", LocationType.BEACH, 100, 0)
-        val horse = Horse(start, 200, HorseType.WILD)
+        val horse = Horse(start, 200, true)
 
         assertThrows<IllegalStateException> {
             horse.moveTo(target)
